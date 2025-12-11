@@ -1143,7 +1143,7 @@ class FinnDealFinderApp(ctk.CTk):
             self.after(0, lambda: self._display_results(analyzed_results))
             
         except Exception as e:
-            self.after(0, lambda: self._show_error(str(e)))
+    self.after(0, lambda err=e: self._show_error(str(err)))
         finally:
             self.after(0, self._search_complete)
             

@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 FINN.no Deal Finder Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a28;
+            --bg-card: #1e1e2e;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-info: #06b6d4;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #2d2d3d;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            --gradient-2: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+            animation: bgPulse 20s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        /* Main Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 0;
+            overflow-y: auto;
+            max-height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+
+        .sidebar-content {
+            padding: 25px;
+        }
+
+        /* Logo Section */
+        .logo-section {
+            text-align: center;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .logo-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .logo-badge {
+            display: inline-block;
+            background: var(--gradient-1);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Filter Sections */
+        .filter-section {
+            margin-bottom: 25px;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label .icon {
+            font-size: 1rem;
+        }
+
+        /* Inputs */
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        /* Price Range */
+        .price-range {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .price-range input {
+            flex: 1;
+        }
+
+        .price-range .dash {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Slider */
+        .slider-container {
+            padding: 10px 0;
+        }
+
+        .slider-value {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--accent-primary);
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            border: none;
+            padding: 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.4);
+            transition: transform 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .btn-danger {
+            background: var(--accent-danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        /* Saved Searches */
+        .saved-section {
+            border-top: 1px solid var(--border);
+            padding-top: 25px;
+            margin-top: 25px;
+        }
+
+        .saved-header {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .saved-item {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .saved-item:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .saved-item-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .saved-item-details {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .saved-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .saved-item-actions button {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Stats */
+        .header-stats {
+            background: var(--bg-secondary);
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .progress-section {
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-1);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .stat-icon {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card.primary .stat-value { color: var(--accent-primary); }
+        .stat-card.success .stat-value { color: var(--accent-success); }
+        .stat-card.warning .stat-value { color: var(--accent-warning); }
+        .stat-card.danger .stat-value { color: var(--accent-danger); }
+        .stat-card.info .stat-value { color: var(--accent-info); }
+
+        /* Tabs */
+        .tabs-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 30px;
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 5px;
+            background: var(--bg-secondary);
+            padding: 6px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        /* Results Grid */
+        .results-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .results-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--border);
+            transition: background 0.3s;
+        }
+
+        .result-card:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .result-card.excellent::before { background: var(--accent-success); }
+        .result-card.great::before { background: #84cc16; }
+        .result-card.good::before { background: var(--accent-warning); }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .result-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 1;
+            padding-right: 15px;
+        }
+
+        .deal-badge {
+            background: var(--gradient-1);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
+        }
+
+        .result-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-price {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-success);
+        }
+
+        .result-savings {
+            color: var(--accent-success);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 20px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .result-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .result-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .result-posted {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .result-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: inherit;
+        }
+
+        .result-btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .result-btn-primary:hover {
+            background: var(--accent-secondary);
+        }
+
+        .result-btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            padding: 15px 30px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .export-btn {
+            padding: 10px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .export-btn:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                max-height: none;
+                position: relative;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tabs-header {
+                flex-wrap: wrap;
+            }
+            
+            .tab-btn {
+                flex: none;
+                width: calc(50% - 5px);
+            }
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.success {
+            border-color: var(--accent-success);
+        }
+
+        .notification.error {
+            border-color: var(--accent-danger);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-content">
+                <!-- Logo -->
+                <div class="logo-section">
+                    <div class="logo">🏆 FINN Deal Finder</div>
+                    <div class="logo-subtitle">Find the Best Deals in Norway</div>
+                    <span class="logo-badge">Pro Version</span>
+                </div>
+                
+                <!-- Search Filters -->
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">🔤</span> Search Keywords
+                    </label>
+                    <input type="text" id="keyword" placeholder="e.g., iPhone 15, MacBook, PS5...">
+                </div>
+                
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">📁</span> Market Category
+                    </label>
+                    <select id="category">
+                        <option value="torget">Torget (Marketplace)</option>
+                        <option value="bil">Bil (Cars)</option>
+                        <option value="eiendom">Eiendom (Real Estate)</option>
+                        <option value="mc">MC (Motorcycles)</option>
+                        <option value="bat">Båt (Boats)</option>
+                    </select>
+                </div>
+                
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">📂</span> Subcategory
+                    </label>
+                    <select id="subcategory">
+                        <option value="">Alle kategorier</option>
+                        <option value="electronics">Elektronikk og hvitevarer</option>
+                        <option value="sport">Friluftsliv og sport</option>
+                        <option value="home">Hus og hjem</option>
+                        <option value="baby">Barn og baby</option>
+                        <option value="hobby">Hobby og underholdning</option>
+                        <option value="clothes">Klær og tilbehør</option>
+                    </select>
+                </div>
+                
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">📍</span> Location
+                    </label>
+                    <select id="location">
+                        <option value="">Hele Norge</option>
+                        <option value="oslo">Oslo</option>
+                        <option value="bergen">Bergen</option>
+                        <option value="trondheim">Trondheim</option>
+                        <option value="stavanger">Stavanger</option>
+                        <option value="kristiansand">Kristiansand</option>
+                        <option value="tromso">Tromsø</option>
+                    </select>
+                </div>
+                
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">✨</span> Condition
+                    </label>
+                    <select id="condition">
+                        <option value="">Alle tilstander</option>
+                        <option value="new">Ny (New)</option>
+                        <option value="likenew">Som ny (Like New)</option>
+                        <option value="used">Pent brukt (Lightly Used)</option>
+                        <option value="worn">Brukt (Used)</option>
+                    </select>
+                </div>
+                
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">💰</span> Price Range (NOK)
+                    </label>
+                    <div class="price-range">
+                        <input type="number" id="priceMin" placeholder="Min">
+                        <span class="dash">—</span>
+                        <input type="number" id="priceMax" placeholder="Max">
+                    </div>
+                </div>
+                
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">📊</span> Sort By
+                    </label>
+                    <select id="sortBy">
+                        <option value="newest">Nyeste først (Newest)</option>
+                        <option value="price_asc">Pris lav-høy (Price Low-High)</option>
+                        <option value="price_desc">Pris høy-lav (Price High-Low)</option>
+                        <option value="deal_score">Best Deals First</option>
+                    </select>
+                </div>
+                
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">📋</span> Max Results
+                    </label>
+                    <div class="slider-container">
+                        <input type="range" id="maxResults" min="10" max="200" value="50">
+                        <div class="slider-value" id="maxResultsValue">50 results</div>
+                    </div>
+                </div>
+                
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">🎯</span> Deal Score Threshold
+                    </label>
+                    <div class="slider-container">
+                        <input type="range" id="threshold" min="0" max="100" value="70">
+                        <div class="slider-value" id="thresholdValue">70% (Good deals)</div>
+                    </div>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="button-group">
+                    <button class="btn btn-primary" id="searchBtn">
+                        <span>🔍</span> Find Deals
+                        <div class="loading-spinner"></div>
+                    </button>
+                    <button class="btn btn-danger" id="stopBtn" disabled>
+                        <span>⏹</span> Stop Search
+                    </button>
+                    <button class="btn btn-secondary" id="saveSearchBtn">
+                        <span>💾</span> Save Search Criteria
+                    </button>
+                </div>
+                
+                <!-- Saved Searches -->
+                <div class="saved-section">
+                    <div class="saved-header">
+                        <span>💾</span> Saved Searches
+                    </div>
+                    <div id="savedSearches">
+                        <div class="empty-state" style="padding: 20px;">
+                            <p style="font-size: 0.85rem;">No saved searches yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header Stats -->
+            <header class="header-stats">
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Ready to search...</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value" id="statTotal">0</div>
+                        <div class="stat-label">Total Results</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-value" id="statDeals">0</div>
+                        <div class="stat-label">Hot Deals</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value" id="statAvgPrice">0 kr</div>
+                        <div class="stat-label">Avg. Price</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-value" id="statBestScore">—</div>
+                        <div class="stat-label">Best Score</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-icon">💵</div>
+                        <div class="stat-value" id="statSavings">0 kr</div>
+                        <div class="stat-label">Potential Savings</div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="all">
+                        <span>📋</span> All Results
+                    </button>
+                    <button class="tab-btn" data-tab="deals">
+                        <span>🔥</span> Hot Deals
+                    </button>
+                    <button class="tab-btn" data-tab="compare">
+                        <span>⚖️</span> Price Comparison
+                    </button>
+                    <button class="tab-btn" data-tab="history">
+                        <span>📈</span> Price History
+                    </button>
+                </div>
+                
+                <div class="results-container">
+                    <div id="resultsContent" class="results-grid">
+                        <div class="empty-state">
+                            <div class="icon">🔍</div>
+                            <h3>No results yet</h3>
+                            <p>Configure your search filters and click "Find Deals" to start!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="export-buttons">
+                    <button class="export-btn" id="exportCsv">
+                        <span>📄</span> Export CSV
+                    </button>
+                    <button class="export-btn" id="exportExcel">
+                        <span>📊</span> Export Excel
+                    </button>
+                    <button class="export-btn" id="exportJson">
+                        <span>🔗</span> Export JSON
+                    </button>
+                    <button class="export-btn" id="printReport">
+                        <span>🖨️</span> Print Report
+                    </button>
+                </div>
+                <div class="status-text">
+                    Ready • FINN.no Deal Finder Pro v1.0
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Demo data generator
+        const demoProducts = [
+            "iPhone 15 Pro Max 256GB", "iPhone 14 Pro 128GB", "iPhone 13 64GB",
+            "Samsung Galaxy S24 Ultra", "MacBook Pro M3 14\"", "MacBook Air M2",
+            "iPad Pro 12.9\" 2024", "PlayStation 5", "Xbox Series X",
+            "Nintendo Switch OLED", "Sony WH-1000XM5", "AirPods Pro 2",
+            "DJI Mini 4 Pro", "GoPro Hero 12", "Canon EOS R6 II",
+            "Gaming PC RTX 4080", "LG C3 OLED 65\"", "Dyson V15 Detect",
+            "Herman Miller Aeron", "IKEA Kallax", "Sonos Arc Soundbar"
+        ];
+
+        const locations = ["Oslo", "Bergen", "Trondheim", "Stavanger", "Kristiansand", "Tromsø"];
+        const conditions = ["Som ny", "Pent brukt", "Brukt", "Ny"];
+
+        // State
+        let currentResults = [];
+        let savedSearches = JSON.parse(localStorage.getItem('finnSavedSearches') || '[]');
+        let isSearching = false;
+
+        // DOM Elements
+        const searchBtn = document.getElementById('searchBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const saveSearchBtn = document.getElementById('saveSearchBtn');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const resultsContent = document.getElementById('resultsContent');
+
+        // Slider updates
+        document.getElementById('maxResults').addEventListener('input', (e) => {
+            document.getElementById('maxResultsValue').textContent = `${e.target.value} results`;
+        });
+
+        document.getElementById('threshold').addEventListener('input', (e) => {
+            const val = e.target.value;
+            let label = val >= 80 ? 'Excellent deals' : val >= 60 ? 'Good deals' : 'All deals';
+            document.getElementById('thresholdValue').textContent = `${val}% (${label})`;
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderResults(btn.dataset.tab);
+            });
+        });
+
+        // Search function
+        searchBtn.addEventListener('click', async () => {
+            if (isSearching) return;
+            
+            isSearching = true;
+            searchBtn.disabled = true;
+            stopBtn.disabled = false;
+            searchBtn.querySelector('.loading-spinner').style.display = 'inline-block';
+            
+            currentResults = [];
+            const maxResults = parseInt(document.getElementById('maxResults').value);
+            const threshold = parseInt(document.getElementById('threshold').value);
+            const keyword = document.getElementById('keyword').value.toLowerCase();
+            
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Searching FINN.no...';
+            
+            // Simulate search with demo data
+            for (let i = 0; i < maxResults && isSearching; i++) {
+                await new Promise(r => setTimeout(r, 50 + Math.random() * 100));
+                
+                const product = demoProducts[Math.floor(Math.random() * demoProducts.length)];
+                
+                // Filter by keyword if provided
+                if (keyword && !product.toLowerCase().includes(keyword)) {
+                    continue;
+                }
+                
+                const basePrice = Math.floor(Math.random() * 25000) + 500;
+                const isDeal = Math.random() < 0.3;
+                const price = isDeal ? Math.floor(basePrice * 0.7) : basePrice;
+                const avgPrice = isDeal ? basePrice : Math.floor(basePrice * 1.1);
+                const dealScore = isDeal ? Math.floor(Math.random() * 25) + 75 : Math.floor(Math.random() * 40) + 30;
+                
+                currentResults.push({
+                    id: Math.random().toString(36).substr(2, 9),
+                    title: product,
+                    price: price,
+                    avgPrice: avgPrice,
+                    dealScore: dealScore,
+                    location: locations[Math.floor(Math.random() * locations.length)],
+                    condition: conditions[Math.floor(Math.random() * conditions.length)],
+                    posted: `${Math.floor(Math.random() * 30) + 1} dager siden`,
+                    url: `https://www.finn.no/bap/forsale/ad.html?finnkode=${Math.floor(Math.random() * 900000000) + 100000000}`
+                });
+                
+                const progress = ((i + 1) / maxResults) * 100;
+                progressFill.style.width = `${progress}%`;
+                progressText.textContent = `Found ${currentResults.length} items...`;
+            }
+            
+            // Sort by deal score
+            currentResults.sort((a, b) => b.dealScore - a.dealScore);
+            
+            updateStats();
+            renderResults('all');
+            
+            progressText.textContent = `✅ Found ${currentResults.length} items!`;
+            isSearching = false;
+            searchBtn.disabled = false;
+            stopBtn.disabled = true;
+            searchBtn.querySelector('.loading-spinner').style.display = 'none';
+        });
+
+        // Stop search
+        stopBtn.addEventListener('click', () => {
+            isSearching = false;
+            progressText.textContent = '⏹ Search stopped';
+        });
+
+        // Update statistics
+        function updateStats() {
+            const threshold = parseInt(document.getElementById('threshold').value);
+            const hotDeals = currentResults.filter(r => r.dealScore >= threshold);
+            const prices = currentResults.map(r => r.price);
+            const avgPrice = prices.length ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 0;
+            const bestScore = currentResults.length ? Math.max(...currentResults.map(r => r.dealScore)) : 0;
+            const savings = hotDeals.reduce((sum, item) => sum + Math.max(0, item.avgPrice - item.price), 0);
+            
+            document.getElementById('statTotal').textContent = currentResults.length;
+            document.getElementById('statDeals').textContent = hotDeals.length;
+            document.getElementById('statAvgPrice').textContent = `${avgPrice.toLocaleString()} kr`;
+            document.getElementById('statBestScore').textContent = `${bestScore}%`;
+            document.getElementById('statSavings').textContent = `${savings.toLocaleString()} kr`;
+        }
+
+        // Render results
+        function renderResults(tab) {
+            const threshold = parseInt(document.getElementById('threshold').value);
+            let items = currentResults;
+            
+            if (tab === 'deals') {
+                items = currentResults.filter(r => r.dealScore >= threshold);
+            }
+            
+            if (items.length === 0) {
+                resultsContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">${tab === 'deals' ? '🔥' : '🔍'}</div>
+                        <h3>${tab === 'deals' ? 'No hot deals found' : 'No results yet'}</h3>
+                        <p>${tab === 'deals' ? 'Try lowering the deal threshold' : 'Configure your search and click "Find Deals"'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            resultsContent.innerHTML = items.map(item => {
+                const dealClass = item.dealScore >= 90 ? 'excellent' : item.dealScore >= 80 ? 'great' : item.dealScore >= 70 ? 'good' : '';
+                const savings = item.avgPrice - item.price;
+                const savingsText = savings > 0 ? `<span class="result-savings">📉 ${savings.toLocaleString()} kr under avg</span>` : '';
+                const badge = item.dealScore >= 70 ? `<span class="deal-badge">🔥 ${item.dealScore}%</span>` : '';
+                
+                return `
+                    <div class="result-card ${dealClass}">
+                        <div class="result-header">
+                            <div class="result-title">${item.title}</div>
+                            ${badge}
+                        </div>
+                        <div class="result-details">
+                            <span class="result-price">${item.price.toLocaleString()} kr</span>
+                            ${savingsText}
+                        </div>
+                        <div class="result-meta">
+                            <span>📍 ${item.location}</span>
+                            <span>✨ ${item.condition}</span>
+                        </div>
+                        <div class="result-footer">
+                            <span class="result-posted">📅 ${item.posted}</span>
+                            <div class="result-actions">
+                                <button class="result-btn result-btn-primary" onclick="window.open('${item.url}', '_blank')">
+                                    🔗 View on FINN
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Save search
+        saveSearchBtn.addEventListener('click', () => {
+            const name = prompt('Enter a name for this search:');
+            if (!name) return;
+            
+            const search = {
+                name,
+                keyword: document.getElementById('keyword').value,
+                category: document.getElementById('category').value,
+                location: document.getElementById('location').value,
+                savedAt: new Date().toISOString()
+            };
+            
+            savedSearches.push(search);
+            localStorage.setItem('finnSavedSearches', JSON.stringify(savedSearches));
+            renderSavedSearches();
+            showNotification('Search saved successfully!', 'success');
+        });
+
+        // Render saved searches
+        function renderSavedSearches() {
+            const container = document.getElementById('savedSearches');
+            
+            if (savedSearches.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 20px;">
+                        <p style="font-size: 0.85rem;">No saved searches yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = savedSearches.map((search, i) => `
+                <div class="saved-item">
+                    <div class="saved-item-name">${search.name}</div>
+                    <div class="saved-item-details">${search.keyword || 'All items'} • ${search.location || 'Hele Norge'}</div>
+                    <div class="saved-item-actions">
+                        <button class="btn btn-primary" style="flex:1" onclick="loadSearch(${i})">Load</button>
+                        <button class="btn btn-danger" style="width:40px" onclick="deleteSearch(${i})">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadSearch(index) {
+            const search = savedSearches[index];
+            document.getElementById('keyword').value = search.keyword || '';
+            document.getElementById('category').value = search.category || 'torget';
+            document.getElementById('location').value = search.location || '';
+            showNotification(`Loaded: ${search.name}`, 'success');
+        }
+
+        function deleteSearch(index) {
+            savedSearches.splice(index, 1);
+            localStorage.setItem('finnSavedSearches', JSON.stringify(savedSearches));
+            renderSavedSearches();
+        }
+
+        // Export functions
+        document.getElementById('exportCsv').addEventListener('click', () => {
+            if (!currentResults.length) {
+                showNotification('No results to export!', 'error');
+                return;
+            }
+            
+            const csv = [
+                ['Title', 'Price', 'Avg Price', 'Deal Score', 'Location', 'Condition', 'URL'].join(','),
+                ...currentResults.map(r => [
+                    `"${r.title}"`, r.price, r.avgPrice, r.dealScore, r.location, r.condition, r.url
+                ].join(','))
+            ].join('\n');
+            
+            downloadFile(csv, 'finn_deals.csv', 'text/csv');
+            showNotification('CSV exported!', 'success');
+        });
+
+        document.getElementById('exportJson').addEventListener('click', () => {
+            if (!currentResults.length) {
+                showNotification('No results to export!', 'error');
+                return;
+            }
+            
+            const json = JSON.stringify({ items: currentResults, exportDate: new Date().toISOString() }, null, 2);
+            downloadFile(json, 'finn_deals.json', 'application/json');
+            showNotification('JSON exported!', 'success');
+        });
+
+        document.getElementById('printReport').addEventListener('click', () => {
+            if (!currentResults.length) {
+                showNotification('No results to print!', 'error');
+                return;
+            }
+            window.print();
+        });
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showNotification(message, type) {
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> ${message}`;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+
+        // Initialize
+        renderSavedSearches();
+    </script>
+</body>
+</html>

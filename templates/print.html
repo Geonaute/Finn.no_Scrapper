@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finn.no Deal Finder - Print Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 30px;
+            color: #1a1a2e;
+            line-height: 1.6;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .summary-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e9ecef;
+        }
+        
+        .great-deal {
+            background: rgba(0, 217, 160, 0.15) !important;
+        }
+        
+        .good-deal {
+            background: rgba(255, 193, 7, 0.15) !important;
+        }
+        
+        .score-great {
+            color: #00d9a0;
+            font-weight: 700;
+        }
+        
+        .score-good {
+            color: #ffc107;
+            font-weight: 700;
+        }
+        
+        .price {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .link {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        @media print {
+            body {
+                padding: 15px;
+            }
+            
+            .summary {
+                background: none;
+                border: 1px solid #dee2e6;
+            }
+            
+            tr:nth-child(even) {
+                background: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            th {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .great-deal {
+                background: rgba(0, 217, 160, 0.15) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .good-deal {
+                background: rgba(255, 193, 7, 0.15) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🔍 Finn.no Deal Finder</div>
+        <div class="subtitle">Generated: {{ generated }}</div>
+    </div>
+    
+    <div class="summary">
+        <div class="summary-item">
+            <div class="summary-value">{{ listings|length }}</div>
+            <div class="summary-label">Total Items</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-value">{{ listings|selectattr('deal_analysis')|selectattr('deal_analysis.is_great_deal')|list|length }}</div>
+            <div class="summary-label">Great Deals</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-value">{{ listings|selectattr('deal_analysis')|selectattr('deal_analysis.is_good_deal')|list|length }}</div>
+            <div class="summary-label">Good Deals</div>
+        </div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Deal Score</th>
+                <th>Avg Price</th>
+                <th>Savings</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for listing in listings[:100] %}
+            <tr class="{% if listing.deal_analysis and listing.deal_analysis.is_great_deal %}great-deal{% elif listing.deal_analysis and listing.deal_analysis.is_good_deal %}good-deal{% endif %}">
+                <td>{{ loop.index }}</td>
+                <td>{{ listing.title[:50] }}{% if listing.title|length > 50 %}...{% endif %}</td>
+                <td class="price">{{ listing.price or '-' }}</td>
+                <td class="{% if listing.deal_analysis and listing.deal_analysis.score >= 70 %}score-great{% elif listing.deal_analysis and listing.deal_analysis.score >= 50 %}score-good{% endif %}">
+                    {{ listing.deal_analysis.score if listing.deal_analysis else '-' }}{% if listing.deal_analysis %}%{% endif %}
+                </td>
+                <td>{{ listing.deal_analysis.avg_price|int if listing.deal_analysis and listing.deal_analysis.avg_price else '-' }} kr</td>
+                <td>{{ listing.deal_analysis.savings_amount|int if listing.deal_analysis and listing.deal_analysis.savings_amount else '-' }} kr</td>
+                <td>{{ listing.location or '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        <p>Report generated by Finn.no Deal Finder Pro</p>
+        <p>All listings sourced from finn.no - Norway's largest marketplace</p>
+    </div>
+    
+    <script>
+        // Auto-print
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        };
+    </script>
+</body>
+</html>

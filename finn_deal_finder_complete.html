@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 FINN.no Deal Finder Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a26;
+            --bg-card: #1e1e2d;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-info: #06b6d4;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #2d2d3d;
+            --glow-primary: rgba(99, 102, 241, 0.3);
+            --glow-success: rgba(16, 185, 129, 0.3);
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            --gradient-2: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 40%),
+                        radial-gradient(circle at 40% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 45%);
+            animation: pulse-bg 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse-bg {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.1) rotate(5deg); opacity: 0.8; }
+        }
+
+        /* Grid pattern overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Main Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 380px;
+            min-width: 380px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 25px;
+            background: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .logo-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .sidebar-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 3px;
+        }
+
+        /* Form Elements */
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .filter-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .filter-label .icon {
+            font-size: 1rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--glow-primary);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        select.input-field {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 45px;
+        }
+
+        .price-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .price-range input {
+            flex: 1;
+        }
+
+        .price-range .separator {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Slider */
+        .slider-container {
+            margin-top: 8px;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--glow-primary);
+            transition: transform 0.2s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .slider-value .current {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 15px var(--glow-primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--glow-primary);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--accent-primary);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-success {
+            background: var(--gradient-success);
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        /* Saved Searches */
+        .saved-searches-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .saved-search-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .saved-search-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateX(5px);
+        }
+
+        .saved-search-card .name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .saved-search-card .details {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .saved-search-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .saved-search-actions button {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            border-radius: 6px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* Header Stats */
+        .stats-header {
+            padding: 20px 30px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .progress-section {
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-1);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--stat-color, var(--accent-primary));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .stat-card .label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--stat-color, var(--accent-primary));
+        }
+
+        /* Tabs */
+        .tabs-container {
+            padding: 0 30px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--accent-primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient-1);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Results Area */
+        .results-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px 30px;
+        }
+
+        .results-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .results-container::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        .results-container::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 4px;
+        }
+
+        .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            text-align: center;
+        }
+
+        .placeholder .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .placeholder .text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        /* Result Cards */
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--card-accent, var(--border));
+        }
+
+        .result-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateX(5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-card.hot-deal::before {
+            background: var(--gradient-success);
+        }
+
+        .result-card.hot-deal {
+            border-color: var(--accent-success);
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(16, 185, 129, 0.05) 100%);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            max-width: 70%;
+        }
+
+        .deal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: var(--gradient-success);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+        }
+
+        .deal-badge.excellent {
+            background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .deal-badge.great {
+            background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
+        }
+
+        .deal-badge.good {
+            background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+        }
+
+        .deal-badge.fair {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        }
+
+        .result-details {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 15px;
+        }
+
+        .price-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-main {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-success);
+        }
+
+        .price-comparison {
+            font-size: 0.85rem;
+            color: var(--accent-success);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .price-comparison.above {
+            color: var(--accent-danger);
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .result-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .result-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .posted-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+        }
+
+        /* Comparison Groups */
+        .comparison-group {
+            margin-bottom: 30px;
+        }
+
+        .group-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .group-title {
+            font-weight: 600;
+        }
+
+        .group-count {
+            background: var(--accent-primary);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .comparison-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .comparison-card:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .comparison-card.best-price {
+            border-color: var(--accent-success);
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, var(--bg-card) 50%);
+        }
+
+        .comparison-card.best-price::before {
+            content: '🏆 BEST';
+            position: absolute;
+            top: -8px;
+            left: 15px;
+            background: var(--gradient-success);
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .comparison-rank {
+            width: 30px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .comparison-info {
+            flex: 1;
+        }
+
+        .comparison-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .comparison-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .comparison-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .comparison-card.best-price .comparison-price {
+            color: var(--accent-success);
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success {
+            border-color: var(--accent-success);
+        }
+
+        .toast.error {
+            border-color: var(--accent-danger);
+        }
+
+        .toast-icon {
+            font-size: 1.3rem;
+        }
+
+        .toast-message {
+            font-size: 0.95rem;
+        }
+
+        /* Score Bar */
+        .score-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .score-bar {
+            width: 100px;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .score-bar-fill.excellent { background: var(--gradient-success); }
+        .score-bar-fill.great { background: linear-gradient(90deg, #84cc16, #65a30d); }
+        .score-bar-fill.good { background: linear-gradient(90deg, #eab308, #ca8a04); }
+        .score-bar-fill.fair { background: linear-gradient(90deg, #f97316, #ea580c); }
+        .score-bar-fill.poor { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+        .score-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            min-width: 40px;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--bg-tertiary);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                position: fixed;
+                left: -380px;
+                top: 0;
+                height: 100vh;
+                z-index: 100;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 101;
+            padding: 12px;
+            background: var(--accent-primary);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar, .footer, .tabs-container, .stats-header, .result-actions {
+                display: none !important;
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .result-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+
+    <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">🏆 FINN Deal Finder</div>
+                <div class="logo-subtitle">Find the Best Deals in Norway</div>
+            </div>
+
+            <div class="sidebar-content">
+                <!-- Search Filters -->
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">🔤</span> Search Keywords
+                    </label>
+                    <input type="text" class="input-field" id="searchKeyword" placeholder="e.g., iPhone 15, MacBook, PS5...">
+                </div>
+
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">📁</span> Market Category
+                    </label>
+                    <select class="input-field" id="category" onchange="updateSubcategories()">
+                        <option value="torget">Torget (Marketplace)</option>
+                        <option value="bil">Bil (Cars)</option>
+                        <option value="eiendom">Eiendom (Real Estate)</option>
+                        <option value="mc">MC (Motorcycles)</option>
+                        <option value="bat">Båt (Boats)</option>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">📂</span> Subcategory
+                    </label>
+                    <select class="input-field" id="subcategory">
+                        <option value="">All Categories</option>
+                        <option value="electronics">Electronics & Appliances</option>
+                        <option value="furniture">Furniture & Interior</option>
+                        <option value="sports">Sports & Outdoor</option>
+                        <option value="clothing">Clothing & Accessories</option>
+                        <option value="baby">Baby & Kids</option>
+                        <option value="hobby">Hobby & Entertainment</option>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">📍</span> Location
+                    </label>
+                    <select class="input-field" id="location">
+                        <option value="">Hele Norge (All Norway)</option>
+                        <option value="oslo">Oslo</option>
+                        <option value="bergen">Bergen</option>
+                        <option value="trondheim">Trondheim</option>
+                        <option value="stavanger">Stavanger</option>
+                        <option value="kristiansand">Kristiansand</option>
+                        <option value="tromso">Tromsø</option>
+                        <option value="akershus">Akershus</option>
+                        <option value="vestland">Vestland</option>
+                        <option value="rogaland">Rogaland</option>
+                        <option value="trondelag">Trøndelag</option>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">✨</span> Condition
+                    </label>
+                    <select class="input-field" id="condition">
+                        <option value="">All Conditions</option>
+                        <option value="new">Ny (New)</option>
+                        <option value="likenew">Som ny (Like New)</option>
+                        <option value="lightlyused">Pent brukt (Lightly Used)</option>
+                        <option value="used">Brukt (Used)</option>
+                        <option value="repair">Til reparasjon (For Repair)</option>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">💰</span> Price Range (NOK)
+                    </label>
+                    <div class="price-range">
+                        <input type="number" class="input-field" id="priceMin" placeholder="Min">
+                        <span class="separator">—</span>
+                        <input type="number" class="input-field" id="priceMax" placeholder="Max">
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">📊</span> Sort By
+                    </label>
+                    <select class="input-field" id="sortBy">
+                        <option value="newest">Newest First</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                        <option value="deal_score">Best Deals First</option>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">📋</span> Max Results
+                    </label>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="maxResults" min="10" max="200" value="50" oninput="updateMaxResultsLabel()">
+                        <div class="slider-value">
+                            <span>10</span>
+                            <span class="current" id="maxResultsValue">50 results</span>
+                            <span>200</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <label class="filter-label">
+                        <span class="icon">🎯</span> Deal Score Threshold
+                    </label>
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="dealThreshold" min="0" max="100" value="70" oninput="updateThresholdLabel()">
+                        <div class="slider-value">
+                            <span>0%</span>
+                            <span class="current" id="thresholdValue" style="color: var(--accent-success);">70% - Good Deals</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="startSearch()">
+                        <span>🔍</span> Find Deals
+                    </button>
+                    <button class="btn btn-danger" id="stopBtn" onclick="stopSearch()" disabled>
+                        <span>⏹</span> Stop Search
+                    </button>
+                    <button class="btn btn-secondary" onclick="saveSearch()">
+                        <span>💾</span> Save Search Criteria
+                    </button>
+                </div>
+
+                <!-- Saved Searches -->
+                <div class="saved-searches-section">
+                    <div class="section-title">
+                        <span>💾</span> Saved Searches
+                    </div>
+                    <div id="savedSearches">
+                        <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 15px;">
+                            No saved searches yet.<br>Save your first search!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Header -->
+            <div class="stats-header">
+                <div class="progress-section" id="progressSection">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Ready to search...</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card" style="--stat-color: var(--accent-primary)">
+                        <div class="label">📊 Total Results</div>
+                        <div class="value" id="statTotal">0</div>
+                    </div>
+                    <div class="stat-card" style="--stat-color: var(--accent-danger)">
+                        <div class="label">🔥 Hot Deals</div>
+                        <div class="value" id="statDeals">0</div>
+                    </div>
+                    <div class="stat-card" style="--stat-color: var(--accent-success)">
+                        <div class="label">💰 Avg. Price</div>
+                        <div class="value" id="statAvgPrice">0 kr</div>
+                    </div>
+                    <div class="stat-card" style="--stat-color: var(--accent-warning)">
+                        <div class="label">🏆 Best Score</div>
+                        <div class="value" id="statBestScore">—</div>
+                    </div>
+                    <div class="stat-card" style="--stat-color: var(--accent-info)">
+                        <div class="label">💵 Potential Savings</div>
+                        <div class="value" id="statSavings">0 kr</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab active" data-tab="all" onclick="switchTab('all')">📋 All Results</button>
+                    <button class="tab" data-tab="deals" onclick="switchTab('deals')">🔥 Hot Deals</button>
+                    <button class="tab" data-tab="compare" onclick="switchTab('compare')">⚖️ Price Comparison</button>
+                    <button class="tab" data-tab="history" onclick="switchTab('history')">📈 Price History</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="results-container" id="resultsContainer">
+                <div class="placeholder" id="placeholder">
+                    <div class="icon">🔍</div>
+                    <div class="text">
+                        No results yet.<br>
+                        Configure your search filters and click <strong>"Find Deals"</strong> to start!
+                    </div>
+                </div>
+                <div id="resultsContent" style="display: none;"></div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <div class="export-buttons">
+                    <button class="btn btn-secondary btn-small" onclick="exportResults('csv')">📄 Export CSV</button>
+                    <button class="btn btn-secondary btn-small" onclick="exportResults('excel')">📊 Export Excel</button>
+                    <button class="btn btn-secondary btn-small" onclick="exportResults('json')">🔗 Export JSON</button>
+                    <button class="btn btn-small" style="background: var(--accent-info); color: white;" onclick="printResults()">🖨️ Print Report</button>
+                </div>
+                <div class="status-text" id="statusText">Ready • FINN.no Deal Finder Pro v1.0</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Save Search Modal -->
+    <div class="modal-overlay" id="saveModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">💾 Save Search</h3>
+            </div>
+            <div class="modal-body">
+                <div class="filter-section">
+                    <label class="filter-label">Search Name</label>
+                    <input type="text" class="input-field" id="searchName" placeholder="e.g., iPhone deals in Oslo">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmSaveSearch()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Application State
+        let currentResults = [];
+        let savedSearches = JSON.parse(localStorage.getItem('finnSavedSearches') || '[]');
+        let isSearching = false;
+        let currentTab = 'all';
+
+        // Demo Products for simulation
+        const demoProducts = [
+            { name: 'iPhone 15 Pro Max 256GB', basePrice: 14990, category: 'electronics' },
+            { name: 'iPhone 14 Pro 128GB', basePrice: 11990, category: 'electronics' },
+            { name: 'Samsung Galaxy S24 Ultra', basePrice: 13990, category: 'electronics' },
+            { name: 'MacBook Pro M3 14"', basePrice: 24990, category: 'electronics' },
+            { name: 'MacBook Air M2 13"', basePrice: 12990, category: 'electronics' },
+            { name: 'iPad Pro 12.9" 2024', basePrice: 14990, category: 'electronics' },
+            { name: 'PlayStation 5', basePrice: 5490, category: 'electronics' },
+            { name: 'Xbox Series X', basePrice: 5190, category: 'electronics' },
+            { name: 'Nintendo Switch OLED', basePrice: 3490, category: 'electronics' },
+            { name: 'Sony WH-1000XM5', basePrice: 3490, category: 'electronics' },
+            { name: 'AirPods Pro 2', basePrice: 2990, category: 'electronics' },
+            { name: 'DJI Mini 4 Pro', basePrice: 9990, category: 'electronics' },
+            { name: 'GoPro Hero 12', basePrice: 4490, category: 'electronics' },
+            { name: 'Canon EOS R6 II', basePrice: 24990, category: 'electronics' },
+            { name: 'IKEA KALLAX Shelf Unit', basePrice: 799, category: 'furniture' },
+            { name: 'Herman Miller Aeron Chair', basePrice: 12990, category: 'furniture' },
+            { name: 'Gaming PC RTX 4080', basePrice: 25990, category: 'electronics' },
+            { name: 'LG C3 OLED 65"', basePrice: 17990, category: 'electronics' },
+            { name: 'Dyson V15 Detect', basePrice: 6990, category: 'electronics' },
+            { name: 'Sonos Arc Soundbar', basePrice: 9490, category: 'electronics' },
+            { name: 'Ski Rossignol Experience 88', basePrice: 5990, category: 'sports' },
+            { name: 'Trek Fuel EX 8 MTB', basePrice: 34990, category: 'sports' },
+            { name: 'Canada Goose Expedition Parka', basePrice: 12990, category: 'clothing' },
+            { name: 'Stokke Tripp Trapp High Chair', basePrice: 2890, category: 'baby' },
+            { name: 'LEGO Star Wars UCS Set', basePrice: 7990, category: 'hobby' },
+        ];
+
+        const locations = ['Oslo', 'Bergen', 'Trondheim', 'Stavanger', 'Kristiansand', 'Tromsø', 'Drammen', 'Fredrikstad', 'Sandnes', 'Bærum'];
+        const conditions = ['Ny', 'Som ny', 'Pent brukt', 'Brukt'];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSavedSearches();
+        });
+
+        // UI Functions
+        function updateMaxResultsLabel() {
+            const value = document.getElementById('maxResults').value;
+            document.getElementById('maxResultsValue').textContent = `${value} results`;
+        }
+
+        function updateThresholdLabel() {
+            const value = parseInt(document.getElementById('dealThreshold').value);
+            const label = document.getElementById('thresholdValue');
+            
+            if (value >= 80) {
+                label.textContent = `${value}% - Excellent Deals`;
+                label.style.color = 'var(--accent-success)';
+            } else if (value >= 60) {
+                label.textContent = `${value}% - Good Deals`;
+                label.style.color = 'var(--accent-warning)';
+            } else {
+                label.textContent = `${value}% - All Deals`;
+                label.style.color = 'var(--text-secondary)';
+            }
+        }
+
+        function updateSubcategories() {
+            // Would update subcategories based on main category
+            // For demo, keeping the same list
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+            renderResults();
+        }
+
+        // Search Functions
+        async function startSearch() {
+            if (isSearching) return;
+            
+            isSearching = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('resultsContent').style.display = 'block';
+            
+            const maxResults = parseInt(document.getElementById('maxResults').value);
+            const threshold = parseInt(document.getElementById('dealThreshold').value);
+            const keyword = document.getElementById('searchKeyword').value.toLowerCase();
+            
+            currentResults = [];
+            
+            // Simulate search with progress
+            for (let i = 0; i < maxResults && isSearching; i++) {
+                await new Promise(resolve => setTimeout(resolve, 50));
+                
+                const progress = ((i + 1) / maxResults) * 100;
+                document.getElementById('progressBar').style.width = `${progress}%`;
+                document.getElementById('progressText').textContent = `Scraping... ${i + 1}/${maxResults} items`;
+                
+                // Generate demo item
+                const product = demoProducts[Math.floor(Math.random() * demoProducts.length)];
+                
+                // Skip if keyword doesn't match (simple filter)
+                if (keyword && !product.name.toLowerCase().includes(keyword)) {
+                    continue;
+                }
+                
+                const isDeal = Math.random() < 0.35;
+                const priceVariation = isDeal ? 0.55 + Math.random() * 0.2 : 0.85 + Math.random() * 0.4;
+                const price = Math.round(product.basePrice * priceVariation);
+                const avgPrice = Math.round(product.basePrice * (0.9 + Math.random() * 0.2));
+                
+                let dealScore;
+                if (price < avgPrice * 0.7) dealScore = 85 + Math.floor(Math.random() * 15);
+                else if (price < avgPrice * 0.85) dealScore = 70 + Math.floor(Math.random() * 15);
+                else if (price < avgPrice) dealScore = 50 + Math.floor(Math.random() * 20);
+                else dealScore = 20 + Math.floor(Math.random() * 30);
+                
+                const item = {
+                    id: `finn_${Date.now()}_${i}`,
+                    title: product.name,
+                    price: price,
+                    avgPrice: avgPrice,
+                    dealScore: dealScore,
+                    location: locations[Math.floor(Math.random() * locations.length)],
+                    condition: conditions[Math.floor(Math.random() * conditions.length)],
+                    posted: `${Math.floor(Math.random() * 14) + 1} days ago`,
+                    url: `https://www.finn.no/bap/forsale/ad.html?finnkode=${100000000 + Math.floor(Math.random() * 899999999)}`,
+                    sellerType: Math.random() > 0.3 ? 'Private' : 'Business',
+                    category: product.category
+                };
+                
+                // Add recommendation based on score
+                if (item.dealScore >= 90) {
+                    item.recommendation = 'EXCELLENT';
+                    item.recommendationText = '🔥 EXCELLENT DEAL - Buy Now!';
+                } else if (item.dealScore >= 80) {
+                    item.recommendation = 'great';
+                    item.recommendationText = '⭐ Great Deal - Highly Recommended';
+                } else if (item.dealScore >= 70) {
+                    item.recommendation = 'good';
+                    item.recommendationText = '👍 Good Deal - Worth Considering';
+                } else if (item.dealScore >= 50) {
+                    item.recommendation = 'fair';
+                    item.recommendationText = '📊 Fair Price';
+                } else {
+                    item.recommendation = 'poor';
+                    item.recommendationText = '⚠️ Above Average Price';
+                }
+                
+                currentResults.push(item);
+                
+                // Update live stats every 5 items
+                if (i % 5 === 0) {
+                    updateStats(threshold);
+                }
+            }
+            
+            // Final update
+            updateStats(threshold);
+            renderResults();
+            
+            document.getElementById('progressBar').style.width = '100%';
+            const hotDeals = currentResults.filter(r => r.dealScore >= threshold).length;
+            document.getElementById('progressText').textContent = `✅ Found ${currentResults.length} items, ${hotDeals} hot deals!`;
+            document.getElementById('statusText').textContent = `Search complete • ${currentResults.length} results`;
+            
+            isSearching = false;
+            document.getElementById('stopBtn').disabled = true;
+            
+            showToast('success', `Found ${currentResults.length} items with ${hotDeals} hot deals!`);
+        }
+
+        function stopSearch() {
+            isSearching = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('progressText').textContent = '⏹ Search stopped';
+            showToast('info', 'Search stopped');
+        }
+
+        function updateStats(threshold) {
+            const prices = currentResults.filter(r => r.price > 0).map(r => r.price);
+            const avgPrice = prices.length ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 0;
+            const hotDeals = currentResults.filter(r => r.dealScore >= threshold);
+            const bestScore = currentResults.length ? Math.max(...currentResults.map(r => r.dealScore)) : 0;
+            
+            let totalSavings = 0;
+            hotDeals.forEach(item => {
+                if (item.avgPrice > item.price) {
+                    totalSavings += (item.avgPrice - item.price);
+                }
+            });
+            
+            document.getElementById('statTotal').textContent = currentResults.length;
+            document.getElementById('statDeals').textContent = hotDeals.length;
+            document.getElementById('statAvgPrice').textContent = `${avgPrice.toLocaleString()} kr`;
+            document.getElementById('statBestScore').textContent = bestScore > 0 ? `${bestScore}%` : '—';
+            document.getElementById('statSavings').textContent = `${totalSavings.toLocaleString()} kr`;
+        }
+
+        function renderResults() {
+            const container = document.getElementById('resultsContent');
+            const threshold = parseInt(document.getElementById('dealThreshold').value);
+            
+            let itemsToShow = [...currentResults];
+            
+            // Filter based on tab
+            if (currentTab === 'deals') {
+                itemsToShow = itemsToShow.filter(item => item.dealScore >= threshold);
+                itemsToShow.sort((a, b) => b.dealScore - a.dealScore);
+            } else if (currentTab === 'compare') {
+                renderComparisons(container, itemsToShow);
+                return;
+            } else if (currentTab === 'history') {
+                container.innerHTML = `
+                    <div class="placeholder">
+                        <div class="icon">📈</div>
+                        <div class="text">
+                            Price history tracking coming soon!<br>
+                            Track prices over time to find the best moment to buy.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort based on selection
+            const sortBy = document.getElementById('sortBy').value;
+            if (sortBy === 'price_asc') itemsToShow.sort((a, b) => a.price - b.price);
+            else if (sortBy === 'price_desc') itemsToShow.sort((a, b) => b.price - a.price);
+            else if (sortBy === 'deal_score') itemsToShow.sort((a, b) => b.dealScore - a.dealScore);
+            
+            if (itemsToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="placeholder">
+                        <div class="icon">${currentTab === 'deals' ? '🔥' : '🔍'}</div>
+                        <div class="text">
+                            ${currentTab === 'deals' 
+                                ? 'No hot deals found.<br>Try lowering the deal threshold or broadening your search.'
+                                : 'No results to display.'}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = itemsToShow.map(item => createResultCard(item, threshold)).join('');
+        }
+
+        function createResultCard(item, threshold) {
+            const isHotDeal = item.dealScore >= threshold;
+            const priceDiff = item.avgPrice - item.price;
+            const priceDiffText = priceDiff > 0 
+                ? `<span class="price-comparison">📉 ${priceDiff.toLocaleString()} kr under avg</span>`
+                : `<span class="price-comparison above">📈 ${Math.abs(priceDiff).toLocaleString()} kr over avg</span>`;
+            
+            const scoreClass = item.dealScore >= 90 ? 'excellent' 
+                : item.dealScore >= 80 ? 'great' 
+                : item.dealScore >= 70 ? 'good' 
+                : item.dealScore >= 50 ? 'fair' : 'poor';
+            
+            return `
+                <div class="result-card ${isHotDeal ? 'hot-deal' : ''}">
+                    <div class="result-header">
+                        <div class="result-title">${item.title}</div>
+                        ${item.dealScore >= 70 ? `
+                            <div class="deal-badge ${scoreClass}">
+                                🔥 ${item.dealScore}%
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="result-details">
+                        <div class="price-section">
+                            <div class="price-main">${item.price.toLocaleString()} kr</div>
+                            ${priceDiffText}
+                        </div>
+                        
+                        <div class="score-bar-container">
+                            <div class="score-bar">
+                                <div class="score-bar-fill ${scoreClass}" style="width: ${item.dealScore}%"></div>
+                            </div>
+                            <span class="score-text">${item.dealScore}%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-meta">
+                        <span>📍 ${item.location}</span>
+                        <span>✨ ${item.condition}</span>
+                        <span>👤 ${item.sellerType}</span>
+                    </div>
+                    
+                    <div class="result-footer">
+                        <div class="posted-date">📅 ${item.posted}</div>
+                        <div class="result-actions">
+                            <button class="btn btn-secondary btn-small" onclick="saveItem('${item.id}')">
+                                💾 Save
+                            </button>
+                            <button class="btn btn-primary btn-small" onclick="window.open('${item.url}', '_blank')">
+                                🔗 View on FINN
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderComparisons(container, items) {
+            // Group by product name keywords
+            const groups = {};
+            items.forEach(item => {
+                const words = item.title.toLowerCase().split(' ').filter(w => w.length > 3).slice(0, 3);
+                const key = words.join(' ');
+                if (!groups[key]) groups[key] = [];
+                groups[key].push(item);
+            });
+            
+            // Keep only groups with 2+ items
+            const comparisons = Object.entries(groups)
+                .filter(([_, items]) => items.length >= 2)
+                .map(([key, items]) => ({
+                    name: key.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+                    items: items.sort((a, b) => a.price - b.price).slice(0, 5)
+                }));
+            
+            if (comparisons.length === 0) {
+                container.innerHTML = `
+                    <div class="placeholder">
+                        <div class="icon">⚖️</div>
+                        <div class="text">
+                            No comparable items found.<br>
+                            Price comparisons require similar items to compare.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = comparisons.map(group => `
+                <div class="comparison-group">
+                    <div class="group-header">
+                        <span>⚖️</span>
+                        <span class="group-title">${group.name}</span>
+                        <span class="group-count">${group.items.length} items</span>
+                    </div>
+                    ${group.items.map((item, i) => `
+                        <div class="comparison-card ${i === 0 ? 'best-price' : ''}" style="position: relative;">
+                            <div class="comparison-rank">#${i + 1}</div>
+                            <div class="comparison-info">
+                                <div class="comparison-title">${item.title.substring(0, 50)}</div>
+                                <div class="comparison-meta">📍 ${item.location} • ✨ ${item.condition}</div>
+                            </div>
+                            <div class="comparison-price">${item.price.toLocaleString()} kr</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        // Saved Searches
+        function saveSearch() {
+            document.getElementById('saveModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('saveModal').classList.remove('active');
+        }
+
+        function confirmSaveSearch() {
+            const name = document.getElementById('searchName').value.trim();
+            if (!name) {
+                showToast('error', 'Please enter a name for this search');
+                return;
+            }
+            
+            const searchData = {
+                id: Date.now(),
+                name: name,
+                keyword: document.getElementById('searchKeyword').value,
+                category: document.getElementById('category').value,
+                subcategory: document.getElementById('subcategory').value,
+                location: document.getElementById('location').value,
+                condition: document.getElementById('condition').value,
+                priceMin: document.getElementById('priceMin').value,
+                priceMax: document.getElementById('priceMax').value,
+                sortBy: document.getElementById('sortBy').value,
+                maxResults: document.getElementById('maxResults').value,
+                dealThreshold: document.getElementById('dealThreshold').value,
+                savedAt: new Date().toISOString()
+            };
+            
+            savedSearches.push(searchData);
+            localStorage.setItem('finnSavedSearches', JSON.stringify(savedSearches));
+            
+            loadSavedSearches();
+            closeModal();
+            document.getElementById('searchName').value = '';
+            showToast('success', `Search "${name}" saved successfully!`);
+        }
+
+        function loadSavedSearches() {
+            const container = document.getElementById('savedSearches');
+            
+            if (savedSearches.length === 0) {
+                container.innerHTML = `
+                    <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 15px;">
+                        No saved searches yet.<br>Save your first search!
+                    </p>
+                `;
+                return;
+            }
+            
+            container.innerHTML = savedSearches.map((search, i) => `
+                <div class="saved-search-card" onclick="loadSearch(${i})">
+                    <div class="name">${search.name}</div>
+                    <div class="details">
+                        ${search.keyword ? `"${search.keyword}" • ` : ''}${search.category} • ${search.location || 'All Norway'}
+                    </div>
+                    <div class="saved-search-actions" onclick="event.stopPropagation()">
+                        <button class="btn btn-primary btn-small" onclick="loadSearch(${i})">Load</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteSearch(${i})">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadSearch(index) {
+            const search = savedSearches[index];
+            
+            document.getElementById('searchKeyword').value = search.keyword || '';
+            document.getElementById('category').value = search.category || 'torget';
+            document.getElementById('subcategory').value = search.subcategory || '';
+            document.getElementById('location').value = search.location || '';
+            document.getElementById('condition').value = search.condition || '';
+            document.getElementById('priceMin').value = search.priceMin || '';
+            document.getElementById('priceMax').value = search.priceMax || '';
+            document.getElementById('sortBy').value = search.sortBy || 'newest';
+            document.getElementById('maxResults').value = search.maxResults || 50;
+            document.getElementById('dealThreshold').value = search.dealThreshold || 70;
+            
+            updateMaxResultsLabel();
+            updateThresholdLabel();
+            
+            showToast('success', `Loaded search: ${search.name}`);
+        }
+
+        function deleteSearch(index) {
+            const name = savedSearches[index].name;
+            savedSearches.splice(index, 1);
+            localStorage.setItem('finnSavedSearches', JSON.stringify(savedSearches));
+            loadSavedSearches();
+            showToast('info', `Deleted search: ${name}`);
+        }
+
+        // Export Functions
+        function exportResults(format) {
+            if (currentResults.length === 0) {
+                showToast('error', 'No results to export. Run a search first!');
+                return;
+            }
+            
+            let content, filename, type;
+            
+            if (format === 'csv') {
+                const headers = ['Title', 'Price (NOK)', 'Avg Price (NOK)', 'Deal Score (%)', 'Location', 'Condition', 'Posted', 'URL'];
+                const rows = currentResults.map(item => [
+                    item.title,
+                    item.price,
+                    item.avgPrice,
+                    item.dealScore,
+                    item.location,
+                    item.condition,
+                    item.posted,
+                    item.url
+                ]);
+                
+                content = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+                filename = `finn_deals_${Date.now()}.csv`;
+                type = 'text/csv';
+            } else if (format === 'json') {
+                content = JSON.stringify({ 
+                    exportDate: new Date().toISOString(),
+                    totalItems: currentResults.length,
+                    items: currentResults 
+                }, null, 2);
+                filename = `finn_deals_${Date.now()}.json`;
+                type = 'application/json';
+            } else if (format === 'excel') {
+                // For demo, export as CSV with Excel-friendly formatting
+                const headers = ['Title', 'Price (NOK)', 'Avg Price (NOK)', 'Deal Score (%)', 'Recommendation', 'Location', 'Condition', 'Posted', 'URL'];
+                const rows = currentResults.map(item => [
+                    item.title,
+                    item.price,
+                    item.avgPrice,
+                    item.dealScore,
+                    item.recommendationText,
+                    item.location,
+                    item.condition,
+                    item.posted,
+                    item.url
+                ]);
+                
+                content = '\uFEFF' + [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join('\t')).join('\n');
+                filename = `finn_deals_${Date.now()}.xls`;
+                type = 'application/vnd.ms-excel';
+            }
+            
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('success', `Exported ${currentResults.length} items to ${format.toUpperCase()}`);
+        }
+
+        function printResults() {
+            if (currentResults.length === 0) {
+                showToast('error', 'No results to print. Run a search first!');
+                return;
+            }
+            
+            const threshold = parseInt(document.getElementById('dealThreshold').value);
+            const hotDeals = currentResults.filter(r => r.dealScore >= threshold).length;
+            const avgPrice = currentResults.reduce((sum, r) => sum + r.price, 0) / currentResults.length;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>FINN Deal Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; color: #1e293b; }
+                        .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #4f46e5; }
+                        .header h1 { color: #4f46e5; margin: 0; }
+                        .stats { display: flex; justify-content: space-around; margin-bottom: 30px; }
+                        .stat { text-align: center; }
+                        .stat-value { font-size: 24px; font-weight: bold; color: #4f46e5; }
+                        .stat-label { font-size: 12px; color: #64748b; }
+                        table { width: 100%; border-collapse: collapse; }
+                        th { background: #4f46e5; color: white; padding: 12px; text-align: left; }
+                        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+                        tr:nth-child(even) { background: #f8fafc; }
+                        .hot-deal { background: #dcfce7 !important; }
+                        .score { font-weight: bold; }
+                        .excellent { color: #22c55e; }
+                        .great { color: #84cc16; }
+                        .good { color: #eab308; }
+                        .footer { text-align: center; margin-top: 30px; color: #64748b; font-size: 12px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>🏆 FINN Deal Report</h1>
+                        <p>Generated on ${new Date().toLocaleString()}</p>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value">${currentResults.length}</div>
+                            <div class="stat-label">Total Items</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${hotDeals}</div>
+                            <div class="stat-label">Hot Deals</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${Math.round(avgPrice).toLocaleString()} kr</div>
+                            <div class="stat-label">Avg. Price</div>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Price</th>
+                                <th>Deal Score</th>
+                                <th>Location</th>
+                                <th>Condition</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${currentResults.sort((a, b) => b.dealScore - a.dealScore).map((item, i) => `
+                                <tr class="${item.dealScore >= threshold ? 'hot-deal' : ''}">
+                                    <td>${i + 1}</td>
+                                    <td>${item.title}</td>
+                                    <td><strong>${item.price.toLocaleString()} kr</strong></td>
+                                    <td class="score ${item.dealScore >= 90 ? 'excellent' : item.dealScore >= 80 ? 'great' : item.dealScore >= 70 ? 'good' : ''}">${item.dealScore}%</td>
+                                    <td>${item.location}</td>
+                                    <td>${item.condition}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="footer">
+                        <p>FINN.no Deal Finder Pro v1.0 | Data source: FINN.no</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function saveItem(id) {
+            showToast('success', 'Item saved to watchlist!');
+        }
+
+        // Toast Notifications
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span class="toast-message">${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
